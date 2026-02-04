@@ -179,9 +179,15 @@
 
   // ----- Triple Attack (main hand only; offhand does not triple) -----
   // Triple happens on 10% of rounds that already had a successful double attack.
+  // Only warrior and monk at level 60+ can triple attack.
   const TRIPLE_ATTACK_CHANCE_ON_DOUBLE = 0.1;
 
-  function checkTripleAttack(rng) {
+  function canTripleAttack(level, classId) {
+    return (classId === 'warrior' || classId === 'monk') && (level != null ? level : 0) >= 60;
+  }
+
+  function checkTripleAttack(rng, level, classId) {
+    if (!canTripleAttack(level, classId)) return false;
     return rng() < TRIPLE_ATTACK_CHANCE_ON_DOUBLE;
   }
 
@@ -486,7 +492,7 @@
           } else {
             report.weapon1.swings++;
           }
-          if (checkTripleAttack(rng)) {
+          if (checkTripleAttack(rng, level, options.classId)) {
             attacksThisRound = 3;
             if (rollHit(toHit, avoidance, rng, fromBehind)) {
               let dmg = calcMeleeDamage(w1.damage, offenseForDamage, mitigation, rng, 0);
@@ -696,6 +702,7 @@
     getMitigation,
     getDoubleAttackEffective,
     checkDoubleAttack,
+    canTripleAttack,
     checkTripleAttack,
     getDamageBonusClient,
     isWarriorClass,
