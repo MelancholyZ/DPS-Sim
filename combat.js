@@ -302,7 +302,7 @@
    * @param {number} [options.wornAttack=0] - worn ATK (items)
    * @param {number} [options.spellAttack=0] - spell ATK (buffs)
    * @param {number} [options.toHitBonus=0] - e.g. class bonus (Warrior +24)
-   * @param {number} [options.str=255] - STR stat (affects offense for damage roll when STR >= 75)
+   * @param {number} [options.str=] - STR stat (affects offense for damage roll when STR >= 75)
    * @param {number} options.doubleAttackSkill - double attack skill value
    * @param {number} options.dualWieldSkill - dual wield skill value
    * @param {number} [options.level=60] - level for DA/DW effective
@@ -311,10 +311,10 @@
    * @param {number} [options.avoidance] - defender avoidance for HIT CHANCE. If omitted, uses getAvoidanceNPC(mobLevel) = level*9+5 capped 400/460
    * @param {number} [options.mobLevel=60] - mob level for getMitigation() and default avoidance
    * @param {number} options.fightDurationSec - fight length in seconds
-   * @param {number} [options.dex=255] - dexterity for proc
+   * @param {number} [options.dex=] - dexterity for proc
    * @param {boolean} [options.fromBehind] - if true, skip block/parry/dodge/riposte only
    * @param {boolean} [options.specialAttacks] - if true, fire class special on cooldown
-   * @param {number} [options.backstabModPercent] - rogue only: increase effective backstab skill by this % (e.g. 20 for 20%), capped at 255
+   * @param {number} [options.backstabModPercent] - rogue only: increase effective backstab skill by this % (e.g. 20 for 20%), capped at 252
    * @param {number} [options.backstabSkill] - rogue only: backstab skill for base damage (skill*0.02+2)*weapon_damage; also enforces minHit by level
    * @param {number} [options.seed] - optional RNG seed for reproducibility
    * @param {number} [options.critChanceMult] - AA Critical Hit Chance bonus (percent)
@@ -393,7 +393,7 @@
         maxDamage: 0,
         hitList: [],
         doubleBackstabs: options.classId === 'rogue' ? 0 : undefined,
-        backstabSkill: options.classId === 'rogue' ? Math.min(255, options.backstabSkill != null ? options.backstabSkill : 225) : undefined,
+        backstabSkill: options.classId === 'rogue' ? Math.min(252, options.backstabSkill != null ? options.backstabSkill : 225) : undefined,
         backstabModPercent: options.classId === 'rogue' ? (options.backstabModPercent || 0) : undefined,
       } : null,
       fistweaving: (options.classId === 'monk' && w1.is2H && options.fistweaving) ? { rounds: 0, swings: 0, hits: 0, totalDamage: 0, maxDamage: 0, single: 0, double: 0 } : null,
@@ -418,7 +418,7 @@
           if (isRogueBackstab) {
             const backstabSkill = options.backstabSkill != null ? options.backstabSkill : 225;
             const backstabModPct = options.backstabModPercent || 0;
-            const effectiveSkill = Math.min(255, Math.floor(backstabSkill * (100 + backstabModPct) / 100));
+            const effectiveSkill = Math.min(252, Math.floor(backstabSkill * (100 + backstabModPct) / 100));
             const backstabBase = Math.floor(((effectiveSkill * 0.02) + 2.0) * w1.damage);
             baseDmg = calcMeleeDamage(backstabBase, offenseForDamage, mitigation, rng, 0);
             baseDmg = Math.max(1, Math.floor(baseDmg * specialConfig.damageMultiplier));
@@ -451,7 +451,7 @@
               report.special.count++;
               const backstabSkill2 = options.backstabSkill != null ? options.backstabSkill : 225;
               const backstabModPct2 = options.backstabModPercent || 0;
-              const effectiveSkill2 = Math.min(255, Math.floor(backstabSkill2 * (100 + backstabModPct2) / 100));
+              const effectiveSkill2 = Math.min(252, Math.floor(backstabSkill2 * (100 + backstabModPct2) / 100));
               const backstabBase2 = Math.floor(((effectiveSkill2 * 0.02) + 2.0) * w1.damage);
               let baseDmg2 = calcMeleeDamage(backstabBase2, offenseForDamage, mitigation, rng, 0);
               baseDmg2 = Math.max(1, Math.floor(baseDmg2 * specialConfig.damageMultiplier));
