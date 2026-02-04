@@ -314,6 +314,7 @@
    * @param {boolean} [options.fromBehind] - if true, skip block/parry/dodge/riposte only
    * @param {boolean} [options.specialAttacks] - if true, fire class special on cooldown
    * @param {number} [options.backstabModPercent] - rogue only: increase backstab damage by this % (e.g. 20 for 20%)
+   * @param {number} [options.backstabSkill] - rogue only: backstab skill for base damage (skill*0.02+2)*weapon_damage; also enforces minHit by level
    * @param {number} [options.seed] - optional RNG seed for reproducibility
    * @param {number} [options.critChanceMult] - AA Critical Hit Chance bonus (percent)
    */
@@ -410,8 +411,16 @@
         if (specialHits) {
           report.special.hits++;
           report.special.count++;
-          let baseDmg = calcMeleeDamage(w1.damage, offenseForDamage, mitigation, rng);
-          baseDmg = Math.max(1, Math.floor(baseDmg * specialConfig.damageMultiplier));
+          let baseDmg;
+          if (isRogueBackstab) {
+            const backstabSkill = options.backstabSkill != null ? options.backstabSkill : 252;
+            const backstabBase = Math.floor(((backstabSkill * 0.02) + 2.0) * w1.damage);
+            baseDmg = calcMeleeDamage(backstabBase, offenseForDamage, mitigation, rng, 0);
+            baseDmg = Math.max(1, Math.floor(baseDmg * specialConfig.damageMultiplier));
+          } else {
+            baseDmg = calcMeleeDamage(w1.damage, offenseForDamage, mitigation, rng);
+            baseDmg = Math.max(1, Math.floor(baseDmg * specialConfig.damageMultiplier));
+          }
           const mult = rollDamageMultiplier(offenseForDamage, baseDmg, level, options.classId, false, rng);
           let dmg = mult.damage;
           if (isRogueBackstab && (options.backstabModPercent || 0) > 0) {
@@ -421,6 +430,10 @@
           const critResult = rollMeleeCrit(dmg, 0, level, options.classId, options.dex, options.critChanceMult, false, false, 0, rng);
           dmg = critResult.damage;
           if (critResult.isCrit) { report.critHits++; report.critDamageGain += (dmg - beforeCrit); }
+          if (isRogueBackstab && level != null) {
+            const minHit = level >= 60 ? level * 2 : level > 50 ? Math.floor(level * 3 / 2) : level;
+            dmg = Math.max(dmg, minHit);
+          }
           report.special.totalDamage += dmg;
           report.special.maxDamage = Math.max(report.special.maxDamage, dmg);
           report.weapon1.totalDamage += dmg;
