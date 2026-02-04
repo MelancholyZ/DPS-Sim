@@ -137,10 +137,9 @@
       <input type="text" id="w1-proc" placeholder="e.g. Flaming Sword">
       <label for="w1-proc-damage">Proc spell damage (on proc)</label>
       <input type="number" id="w1-proc-damage" min="0" value="0" placeholder="0">
-      <label class="checkbox-label" style="margin-top: 0.5rem;"><input type="checkbox" id="w1-is2h"> Main hand is 2H weapon</label>
     </section>
 
-    <section>
+    <section id="weapon2-section">
       <h2>Weapon 2 (Offhand, optional)</h2>
       <label for="w2-preset">Quick select</label>
       <select id="w2-preset"></select>
@@ -250,20 +249,20 @@
       const versionEl = $('app-version');
       if (versionEl) versionEl.textContent = 'v' + VERSION;
 
-      // Weapon presets from PQDI (damage, delay decisec, proc spell name, name for sorting; type: 1hb/2hb/1hp/1hs)
+      // Weapon presets from PQDI (damage, delay decisec, proc spell name, name for sorting; type: 1hb/2hb/1hp/1hs/h2h)
       const WEAPON_PRESETS = {
         'unequipped': { damage: 0, delay: 0, proc: '', procDamage: 0, name: 'Unequipped' },
         '27315': { damage: 17, delay: 19, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Fangs of Vyzh`dra', type: '1hp' },
-        '26809': { damage: 17, delay: 20, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Glowing Mithril Ulak', type: '1hb' },
+        '26809': { damage: 17, delay: 20, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Glowing Mithril Ulak', type: 'h2h' },
         '31241': { damage: 16, delay: 19, proc: 'Strike of the Chosen', procDamage: 80, name: 'Gharn\'s Rock of Smashing', type: '1hb' },
         '26599': { damage: 43, delay: 30, proc: 'Serpent\'s Bite', procDamage: 100, name: 'Caen\'s Bo Staff of Fury', is2H: true, type: '2hb' },
         '31242': { damage: 40, delay: 30, proc: '', procDamage: 0, name: 'Abashi\'s Rod of Disempowerment', is2H: true, type: '2hb' },
-        '26849': { damage: 16, delay: 19, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Fist of Acrylia', type: '1hb' },
-        '26860': { damage: 15, delay: 19, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Fist of Glowing Acrylia', type: '1hb' },
-        '5776': { damage: 15, delay: 18, proc: 'Engulfing Roots', procDamage: 160, name: 'Fist of Nature', type: '1hb' },
+        '26849': { damage: 16, delay: 19, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Fist of Acrylia', type: 'h2h' },
+        '26860': { damage: 15, delay: 19, proc: 'Claw of Khati Sha', procDamage: 150, name: 'Fist of Glowing Acrylia', type: 'h2h' },
+        '5776': { damage: 15, delay: 18, proc: 'Engulfing Roots', procDamage: 160, name: 'Fist of Nature', type: 'h2h' },
         '1154': { damage: 12, delay: 18, proc: 'Anarchy', procDamage: 288, name: 'Sceptre of Destruction', type: '1hb' },
-        '27324': { damage: 45, delay: 44, proc: 'Avatar', procDamage: 0, name: 'Primal Velium Brawl Stick', type: '2hb' },
-        '27320': { damage: 15, delay: 20, proc: 'Avatar', procDamage: 0, name: 'Primal Velium Fist Wraps', type: '1hb' },
+        '27324': { damage: 45, delay: 44, proc: 'Avatar', procDamage: 0, name: 'Primal Velium Brawl Stick', is2H: true, type: '2hb' },
+        '27320': { damage: 15, delay: 20, proc: 'Avatar', procDamage: 0, name: 'Primal Velium Fist Wraps', type: 'h2h' },
         '28923': { damage: 1, delay: 18, proc: '', procDamage: 0, name: 'Great Mace of Slaughter', type: '1hb' },
         '28831': { damage: 16, delay: 22, proc: 'Terrifying Darkness', procDamage: 0, name: 'Blackout', type: '1hp' },
         '6631': { damage: 44, delay: 40, proc: 'One Hundred Blows', procDamage: 0, name: 'Ton Po\'s Bo Stick of Understanding', is2H: true, type: '2hb' },
@@ -271,7 +270,7 @@
         '6646': { damage: 28, delay: 30, proc: '', procDamage: 0, name: 'Peacebringer', type: '1hs' },
         '6612': { damage: 9, delay: 18, proc: '', procDamage: 0, name: 'Jade Mace', type: '1hb' },
         '32333': { damage: 12, delay: 23, proc: '', procDamage: 0, name: 'Goranga Spiked Club', type: '1hb' },
-        '6610': { damage: 17, delay: 28, proc: 'Major Shielding', procDamage: 0, name: 'Stave of Shielding', type: '2hb' },
+        '6610': { damage: 17, delay: 28, proc: 'Major Shielding', procDamage: 0, name: 'Stave of Shielding', is2H: true, type: '2hb' },
         '31224': { damage: 15, delay: 19, proc: 'Feast of Blood', procDamage: 0, name: 'Mrylokar\'s Dagger of Vengeance', type: '1hp' },
         '2509': { damage: 15, delay: 20, proc: 'Combust', procDamage: 0, name: 'Massive Heartwood Thorn', type: '1hp' },
         '31379': { damage: 14, delay: 18, proc: '', procDamage: 0, name: 'Claw of Lightning', type: '1hs' },
@@ -284,7 +283,13 @@
       };
 
       const WEAPON_PRESET_IDS = Object.keys(WEAPON_PRESETS).filter(function (id) { return id !== 'unequipped'; }).sort(function (a, b) {
-        return (WEAPON_PRESETS[a].name || '').localeCompare(WEAPON_PRESETS[b].name || '');
+        const typeOrder = { '2hb': 0, '1hb': 1, '1hp': 2, '1hs': 3, 'h2h': 4 };
+        const pa = WEAPON_PRESETS[a];
+        const pb = WEAPON_PRESETS[b];
+        const ta = typeOrder[pa.type] !== undefined ? typeOrder[pa.type] : 99;
+        const tb = typeOrder[pb.type] !== undefined ? typeOrder[pb.type] : 99;
+        if (ta !== tb) return ta - tb;
+        return (pa.name || '').localeCompare(pb.name || '');
       });
 
       function weaponOptionLabel(id) {
@@ -295,6 +300,11 @@
         return (p.type ? p.type + ' ' : '') + desc;
       }
 
+      function isW1TwoHanded() {
+        const presetId = $('w1-preset') && $('w1-preset').value;
+        const p = presetId ? WEAPON_PRESETS[presetId] : null;
+        return !!(p && (p.is2H || p.type === '2hb'));
+      }
       function applyWeaponPreset(prefix, id) {
         const p = id ? WEAPON_PRESETS[id] : null;
         if (p) {
@@ -303,7 +313,10 @@
           $(prefix + '-proc').value = p.proc || '';
           const procDmgEl = $(prefix + '-proc-damage');
           if (procDmgEl) procDmgEl.value = (p.procDamage != null ? p.procDamage : 0) || '';
-          if (prefix === 'w1' && $('w1-is2h')) $('w1-is2h').checked = !!p.is2H;
+          if (prefix === 'w1') {
+            updateWeapon2Disabled();
+            updateFistweavingVisibility();
+          }
         }
       }
 
@@ -343,7 +356,7 @@
         const maxDmgRaw = $(prefix + '-max');
         const minDmg = minDmgRaw && minDmgRaw.value !== '' ? parseInt(minDmgRaw.value, 10) : null;
         const maxDmg = maxDmgRaw && maxDmgRaw.value !== '' ? parseInt(maxDmgRaw.value, 10) : null;
-        const is2H = prefix === 'w1' && $('w1-is2h') && $('w1-is2h').checked;
+        const is2H = prefix === 'w1' && isW1TwoHanded();
         return { damage, delay, procSpell: proc, procSpellDamage: procSpellDamage || 0, minDmg, maxDmg, is2H };
       }
 
@@ -585,18 +598,29 @@
       });
       function updateFistweavingVisibility() {
         const classId = ($('class').value || '').toLowerCase();
-        const is2H = $('w1-is2h') && $('w1-is2h').checked;
+        const is2H = isW1TwoHanded();
         const row = $('fistweaving-row');
         if (row) row.style.display = classId === 'monk' && is2H ? '' : 'none';
       }
-      if ($('w1-is2h')) $('w1-is2h').addEventListener('change', updateFistweavingVisibility);
+      function updateWeapon2Disabled() {
+        const is2H = isW1TwoHanded();
+        const section = $('weapon2-section');
+        if (section) {
+          section.querySelectorAll('select, input').forEach(function (el) { el.disabled = !!is2H; });
+        }
+      }
       $('class').dispatchEvent(new Event('change'));
 
       fillWeaponPresetSelect('w1-preset');
       fillWeaponPresetSelect('w2-preset');
       $('w1-preset').value = 'unequipped';
       applyWeaponPreset('w1', 'unequipped');
-      $('w1-preset').addEventListener('change', function () { applyWeaponPreset('w1', this.value); });
+      updateWeapon2Disabled();
+      $('w1-preset').addEventListener('change', function () {
+        applyWeaponPreset('w1', this.value);
+        updateFistweavingVisibility();
+        updateWeapon2Disabled();
+      });
       $('w2-preset').addEventListener('change', function () { applyWeaponPreset('w2', this.value); });
     })();
   </script>
