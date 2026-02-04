@@ -267,7 +267,7 @@
         '28831': { damage: 16, delay: 22, proc: 'Terrifying Darkness', procDamage: 0, name: 'Blackout', type: '1hp' },
         '6631': { damage: 44, delay: 40, proc: 'One Hundred Blows', procDamage: 0, name: 'Ton Po\'s Bo Stick of Understanding', is2H: true, type: '2hb' },
         '6639': { damage: 29, delay: 30, proc: 'One Hundred Blows', procDamage: 0, name: 'Tranquil Staff', is2H: true, type: '2hb' },
-        '6646': { damage: 28, delay: 30, proc: '', procDamage: 0, name: 'Peacebringer', type: '1hs' },
+        '6646': { damage: 28, delay: 30, proc: '', procDamage: 0, name: 'Peacebringer', is2H: true, type: '2hb' },
         '6612': { damage: 9, delay: 18, proc: '', procDamage: 0, name: 'Jade Mace', type: '1hb' },
         '32333': { damage: 12, delay: 23, proc: '', procDamage: 0, name: 'Goranga Spiked Club', type: '1hb' },
         '6610': { damage: 17, delay: 28, proc: 'Major Shielding', procDamage: 0, name: 'Stave of Shielding', is2H: true, type: '2hb' },
@@ -492,6 +492,7 @@
                   doubleBackstabs: reports[0].special.doubleBackstabs !== undefined ? Math.round(reports.reduce((s, r) => s + (r.special && r.special.doubleBackstabs != null ? r.special.doubleBackstabs : 0), 0) / runs) : undefined,
                   backstabSkill: reports[0].special.backstabSkill,
                   backstabModPercent: reports[0].special.backstabModPercent,
+                  hitList: reports[0].special.hitList,
                 }
               : null,
             fistweaving: reports[0].fistweaving
@@ -547,7 +548,8 @@
         if (!report || !report.weapon1) return;
         const maxBins = 40;
         [ { list: report.weapon1.hitList, label: w1Label || 'Weapon 1 (Main Hand)' },
-          { list: report.weapon2 && report.weapon2.hitList, label: w2Label || 'Weapon 2 (Offhand)' }
+          { list: report.weapon2 && report.weapon2.hitList, label: w2Label || 'Weapon 2 (Offhand)' },
+          { list: report.special && report.special.hitList, label: report.special && report.special.name }
         ].forEach(function (hand) {
           if (!hand.list || hand.list.length === 0) return;
           const section = document.createElement('div');

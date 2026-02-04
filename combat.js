@@ -173,7 +173,8 @@
     return doubleAttackSkill + (toHitOrLevel || 0);
   }
 
-  function checkDoubleAttack(doubleAttackEffective, rng) {
+  function checkDoubleAttack(doubleAttackEffective, rng, classId) {
+    if (classId === 'bard' || classId === 'beastlord') return false;
     return doubleAttackEffective > Math.floor(rng() * 500);
   }
 
@@ -357,7 +358,8 @@
     const w1 = options.weapon1;
     const w2 = options.weapon2;
     const mainHandDamageBonus = getDamageBonusClient(level, options.classId, w1.delay, !!w1.is2H);
-    const dualWielding = !!w2 && (options.dualWieldSkill != null && options.dualWieldSkill > 0);
+    const dualWielding = !!w2 && (options.dualWieldSkill != null && options.dualWieldSkill > 0) &&
+      options.classId !== 'paladin' && options.classId !== 'shadowknight';
 
     const delay1 = effectiveDelayDecisec(w1.delay, options.hastePercent);
     const delay2 = w2 ? effectiveDelayDecisec(w2.delay, options.hastePercent) : 0;
@@ -389,6 +391,7 @@
         hits: 0,
         totalDamage: 0,
         maxDamage: 0,
+        hitList: [],
         doubleBackstabs: options.classId === 'rogue' ? 0 : undefined,
         backstabSkill: options.classId === 'rogue' ? Math.min(255, options.backstabSkill != null ? options.backstabSkill : 225) : undefined,
         backstabModPercent: options.classId === 'rogue' ? (options.backstabModPercent || 0) : undefined,
@@ -413,8 +416,12 @@
           report.special.count++;
           let baseDmg;
           if (isRogueBackstab) {
+            const backstabModPct = options.backstabModPercent || 0;
+            const modifiedWeaponDamage = backstabModPct !== 0
+              ? Math.floor(w1.damage * (100 + backstabModPct) / 100)
+              : w1.damage;
             const backstabSkill = Math.min(255, options.backstabSkill != null ? options.backstabSkill : 225);
-            const backstabBase = Math.floor(((backstabSkill * 0.02) + 2.0) * w1.damage);
+            const backstabBase = Math.floor(((backstabSkill * 0.02) + 2.0) * modifiedWeaponDamage);
             baseDmg = calcMeleeDamage(backstabBase, offenseForDamage, mitigation, rng, 0);
             baseDmg = Math.max(1, Math.floor(baseDmg * specialConfig.damageMultiplier));
           } else {
@@ -423,9 +430,6 @@
           }
           const mult = rollDamageMultiplier(offenseForDamage, baseDmg, level, options.classId, false, rng);
           let dmg = mult.damage;
-          if (isRogueBackstab && (options.backstabModPercent || 0) > 0) {
-            dmg = Math.floor(dmg * (100 + (options.backstabModPercent || 0)) / 100);
-          }
           const beforeCrit = dmg;
           const critResult = rollMeleeCrit(dmg, 0, level, options.classId, options.dex, options.critChanceMult, false, false, 0, rng);
           dmg = critResult.damage;
@@ -436,26 +440,27 @@
           }
           report.special.totalDamage += dmg;
           report.special.maxDamage = Math.max(report.special.maxDamage, dmg);
+          report.special.hitList.push(dmg);
           report.weapon1.totalDamage += dmg;
           report.totalDamage += dmg;
 
           // Rogues 55+ can double backstab: same double attack skill chance for a second backstab
-          if (isRogueBackstab && level > 54 && report.special.doubleBackstabs !== undefined && checkDoubleAttack(doubleAttackEffective, rng)) {
+          if (isRogueBackstab && level > 54 && report.special.doubleBackstabs !== undefined && checkDoubleAttack(doubleAttackEffective, rng, options.classId)) {
             const secondHit = rollHit(toHit, avoidance, rng, fromBehind);
             if (secondHit) {
               report.special.doubleBackstabs++;
               report.special.hits++;
               report.special.count++;
-              let baseDmg2;
-              const backstabSkill = Math.min(255, options.backstabSkill != null ? options.backstabSkill : 225);
-              const backstabBase = Math.floor(((backstabSkill * 0.02) + 2.0) * w1.damage);
-              baseDmg2 = calcMeleeDamage(backstabBase, offenseForDamage, mitigation, rng, 0);
+              const backstabModPct2 = options.backstabModPercent || 0;
+              const modifiedWeaponDamage2 = backstabModPct2 !== 0
+                ? Math.floor(w1.damage * (100 + backstabModPct2) / 100)
+                : w1.damage;
+              const backstabSkill2 = Math.min(255, options.backstabSkill != null ? options.backstabSkill : 225);
+              const backstabBase2 = Math.floor(((backstabSkill2 * 0.02) + 2.0) * modifiedWeaponDamage2);
+              let baseDmg2 = calcMeleeDamage(backstabBase2, offenseForDamage, mitigation, rng, 0);
               baseDmg2 = Math.max(1, Math.floor(baseDmg2 * specialConfig.damageMultiplier));
               const mult2 = rollDamageMultiplier(offenseForDamage, baseDmg2, level, options.classId, false, rng);
               let dmg2 = mult2.damage;
-              if ((options.backstabModPercent || 0) > 0) {
-                dmg2 = Math.floor(dmg2 * (100 + (options.backstabModPercent || 0)) / 100);
-              }
               const beforeCrit2 = dmg2;
               const critResult2 = rollMeleeCrit(dmg2, 0, level, options.classId, options.dex, options.critChanceMult, false, false, 0, rng);
               dmg2 = critResult2.damage;
@@ -466,6 +471,7 @@
               }
               report.special.totalDamage += dmg2;
               report.special.maxDamage = Math.max(report.special.maxDamage, dmg2);
+              report.special.hitList.push(dmg2);
               report.weapon1.totalDamage += dmg2;
               report.totalDamage += dmg2;
             }
@@ -509,7 +515,7 @@
           report.weapon1.swings++;
         }
 
-        if (checkDoubleAttack(doubleAttackEffective, rng)) {
+        if (checkDoubleAttack(doubleAttackEffective, rng, options.classId)) {
           attacksThisRound = 2;
           if (rollHit(toHit, avoidance, rng, fromBehind)) {
             let dmg = calcMeleeDamage(w1.damage, offenseForDamage, mitigation, rng, 0);
@@ -597,7 +603,7 @@
           } else {
             report.fistweaving.swings++;
           }
-          if (checkDoubleAttack(doubleAttackEffective, rng)) {
+          if (checkDoubleAttack(doubleAttackEffective, rng, options.classId)) {
             fwAttacks = 2;
             if (rollHit(toHit, avoidance, rng, fromBehind)) {
               let dmg = calcMeleeDamage(FIST_DAMAGE, offenseForDamage, mitigation, rng, 0);
@@ -651,7 +657,7 @@
           } else {
             report.weapon2.swings++;
           }
-          if (checkDoubleAttack(doubleAttackEffective, rng)) {
+          if (checkDoubleAttack(doubleAttackEffective, rng, options.classId)) {
             attacksThisRound = 2;
             if (rollHit(toHit, avoidance, rng, fromBehind)) {
               let dmg = calcMeleeDamage(w2.damage, offenseForDamage, mitigation, rng, 0);
