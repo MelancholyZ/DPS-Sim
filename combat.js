@@ -302,7 +302,7 @@
    * @param {number} [options.wornAttack=0] - worn ATK (items)
    * @param {number} [options.spellAttack=0] - spell ATK (buffs)
    * @param {number} [options.toHitBonus=0] - e.g. class bonus (Warrior +24)
-   * @param {number} [options.str=] - STR stat (affects offense for damage roll when STR >= 75)
+   * @param {number} [options.str=255] - STR stat (affects offense for damage roll when STR >= 75)
    * @param {number} options.doubleAttackSkill - double attack skill value
    * @param {number} options.dualWieldSkill - dual wield skill value
    * @param {number} [options.level=60] - level for DA/DW effective
@@ -311,7 +311,7 @@
    * @param {number} [options.avoidance] - defender avoidance for HIT CHANCE. If omitted, uses getAvoidanceNPC(mobLevel) = level*9+5 capped 400/460
    * @param {number} [options.mobLevel=60] - mob level for getMitigation() and default avoidance
    * @param {number} options.fightDurationSec - fight length in seconds
-   * @param {number} [options.dex=] - dexterity for proc
+   * @param {number} [options.dex=255] - dexterity for proc
    * @param {boolean} [options.fromBehind] - if true, skip block/parry/dodge/riposte only
    * @param {boolean} [options.specialAttacks] - if true, fire class special on cooldown
    * @param {number} [options.backstabModPercent] - rogue only: increase effective backstab skill by this % (e.g. 20 for 20%), capped at 252
