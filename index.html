@@ -117,7 +117,7 @@
   </style>
 </head>
 <body>
-  <h1>EverQuest DPS Simulator <span id="app-version" style="font-weight: 400; color: var(--muted); font-size: 0.85rem;">v0.3</span></h1>
+  <h1>EverQuest DPS Simulator <span id="app-version" style="font-weight: 400; color: var(--muted); font-size: 0.85rem;">v0.4</span></h1>
   <p class="muted" style="margin:0 0 1rem; color: var(--muted); font-size: 0.9rem;">
     Formulas based on <a href="https://github.com/SecretsOTheP/EQMacEmu/blob/main/zone/attack.cpp" target="_blank" rel="noopener" style="color: var(--accent);">EQMacEmu attack.cpp</a>.
   </p>
@@ -165,13 +165,6 @@
         <option value="monk" selected>Monk</option>
         <option value="rogue">Rogue</option>
         <option value="bard">Bard</option>
-        <option value="cleric">Cleric</option>
-        <option value="druid">Druid</option>
-        <option value="shaman">Shaman</option>
-        <option value="necromancer">Necromancer</option>
-        <option value="wizard">Wizard</option>
-        <option value="magician">Magician</option>
-        <option value="enchanter">Enchanter</option>
         <option value="beastlord">Beastlord</option>
       </select>
       <p class="hint" id="class-hint">Monk: to-hit +0, DA 250, DW 252. You can still edit values.</p>
@@ -237,6 +230,7 @@
   <section style="margin-top: 1rem;">
     <h2>Version log</h2>
     <ul style="font-size: 0.9rem; color: var(--muted); margin: 0; padding-left: 1.25rem;">
+      <li><strong>0.4</strong> — Fistweaving (Monk + 2H): optional offhand 9-dmg rounds, can double attack, no proc; DPS in report. Proc rate: PPM-based formula (~2 PPM at 255 DEX), uses effective delay. Rogue backstab: Backstab skill field (default 225, cap 255), client formula (skill×0.02+2)×weapon damage, level-based minHit; Backstab mod %; effective backstab skill in report when mod used. Removed classes: Necromancer, Enchanter, Shaman, Druid, Cleric, Magician, Wizard.</li>
       <li><strong>0.3</strong> — Unequipped quick select; Behind default; duration 6000s, runs 20; Ambidexterity AA checkbox; main weapon default Unequipped.</li>
       <li><strong>0.2</strong> — Worn/spell attack inputs; toHit excludes worn/spell; offense skill 252 for toHit; removed Offense override; default duration 2400s; histogram always shown; displayed attack &amp; stat contribution in report.</li>
       <li><strong>0.1</strong> — Initial release. Melee combat sim with DA/DW, damage bonus, crits, procs, histogram.</li>
@@ -251,7 +245,7 @@
       const $ = (id) => document.getElementById(id);
 
       // When releasing: 1) Bump VERSION below. 2) Add a new <li> at the top of the Version log section above.
-      const VERSION = '0.3';
+      const VERSION = '0.4';
       const versionEl = $('app-version');
       if (versionEl) versionEl.textContent = 'v' + VERSION;
 
@@ -325,13 +319,6 @@
         monk:      { toHitBonus: 0,  doubleAttack: 250, dualWield: 252, name: 'Monk' },
         rogue:     { toHitBonus: 0,  doubleAttack: 252, dualWield: 252, name: 'Rogue' },
         bard:      { toHitBonus: 0,  doubleAttack: 200, dualWield: 252, name: 'Bard' },
-        cleric:    { toHitBonus: 0,  doubleAttack: 0,   dualWield: 0,   name: 'Cleric' },
-        druid:     { toHitBonus: 0,  doubleAttack: 0,   dualWield: 0,   name: 'Druid' },
-        shaman:    { toHitBonus: 0,  doubleAttack: 0,   dualWield: 0,   name: 'Shaman' },
-        necromancer: { toHitBonus: 0, doubleAttack: 0, dualWield: 0, name: 'Necromancer' },
-        wizard:    { toHitBonus: 0,  doubleAttack: 0,   dualWield: 0,   name: 'Wizard' },
-        magician:  { toHitBonus: 0,  doubleAttack: 0,   dualWield: 0,   name: 'Magician' },
-        enchanter: { toHitBonus: 0,  doubleAttack: 0,   dualWield: 0,   name: 'Enchanter' },
         beastlord: { toHitBonus: 0,  doubleAttack: 200, dualWield: 0,   name: 'Beastlord' },
       };
 
